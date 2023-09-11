@@ -1,25 +1,66 @@
-import logo from './logo.svg';
-import './App.css';
+// FoodApp.js
 
-function App() {
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import Food from './Food';
+
+function FoodApp() {
+  const [selectedCountry, setSelectedCountry] = useState('');
+  const [foodData, setFoodData] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  const API_URL = 'https://www.themealdb.com/api/json/v1/1/filter.php';
+
+  const countries = ['Canadian', 'Italian', 'Japanese', 'Mexican'];
+
+  const fetchData = async (country) => {
+    setLoading(true);
+
+    try {
+      const response = await axios.get(API_URL, {
+        params: { a: country },
+      });
+
+      if (response.data && response.data.meals) {
+        setFoodData(response.data.meals);
+      } else {
+        setFoodData([]);
+      }
+
+      setLoading(false);
+    } catch (error) {
+      console.error('Error fetching data:', error);
+      setFoodData([]);
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (selectedCountry) {
+      fetchData(selectedCountry);
+    }
+  }, [selectedCountry]);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div >
+      <h1 className=' text-center'>Food by Country</h1>
+      <div className='flex justify-center mt-10 gap-4 mb-6'>
+        {countries.map((country) => (
+          <button
+            key={country}
+            onClick={() => setSelectedCountry(country)} className=' p-2 border-2 text-white bg-black  border-blue-50'
+          >
+            {country}
+          </button>
+        ))}
+
+      </div>
+      <Food selectedCountry={selectedCountry} foodData={foodData} />
+      {loading ? (
+        <p>Loading...</p>
+      ) : null}
     </div>
   );
 }
 
-export default App;
+export default FoodApp;
