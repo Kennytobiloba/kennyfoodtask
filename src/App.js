@@ -1,5 +1,3 @@
-// FoodApp.js
-
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Food from './Food';
@@ -22,7 +20,9 @@ function FoodApp() {
       });
 
       if (response.data && response.data.meals) {
-        setFoodData(response.data.meals);
+        
+        const limitedFoodData = response.data.meals.slice(0, 5);
+        setFoodData(limitedFoodData);
       } else {
         setFoodData([]);
       }
@@ -42,23 +42,21 @@ function FoodApp() {
   }, [selectedCountry]);
 
   return (
-    <div >
-      <h1 className=' text-center'>Food by Country</h1>
+    <div className='w-[60%] mx-auto'>
+      <h1 className='text-center'>Food by Country</h1>
       <div className='flex justify-center mt-10 gap-4 mb-6'>
         {countries.map((country) => (
           <button
             key={country}
-            onClick={() => setSelectedCountry(country)} className=' p-2 border-2 text-white bg-black  border-blue-50'
+            onClick={() => setSelectedCountry(country)}
+            className='p-2 border-2 text-white bg-black border-blue-50'
           >
             {country}
           </button>
         ))}
-
       </div>
       <Food selectedCountry={selectedCountry} foodData={foodData} />
-      {loading ? (
-        <p>Loading...</p>
-      ) : null}
+      {loading ? <p>Loading...</p> : null}
     </div>
   );
 }
